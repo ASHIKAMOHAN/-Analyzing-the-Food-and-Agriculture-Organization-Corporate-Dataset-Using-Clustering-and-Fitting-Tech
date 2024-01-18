@@ -3,13 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
 from sklearn.decomposition import PCA
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.preprocessing import StandardScaler
+
 
 # Load the FAO dataset 
 fao_data = pd.read_csv('FAO.csv', encoding='latin-1')
@@ -81,12 +83,14 @@ ax1.set_xlabel('Time')
 ax1.set_ylabel('Y1961') 
 
 
+
 selected_features = ['Area', 'Unit', 'Element', 'Item']
-# Extract the selected features
 data = fao_data[selected_features]
+
 # Identify numeric and non-numeric columns
 numeric_cols = data.select_dtypes(include=np.number).columns
 non_numeric_cols = list(set(data.columns) - set(numeric_cols))
+
 # Create a ColumnTransformer to handle numeric and non-numeric columns separately
 preprocessor = ColumnTransformer(
     transformers=[
@@ -97,21 +101,36 @@ preprocessor = ColumnTransformer(
 
 # Create a pipeline with preprocessing and clustering
 pipeline = make_pipeline(preprocessor, KMeans(n_clusters=3))
+
 # Apply the pipeline
 clusters = pipeline.fit_predict(data)
+
 # Add the cluster information to the DataFrame
 data_with_clusters = data.copy()
 data_with_clusters['Cluster'] = clusters
-# Create separate plots for each cluster
+
+# Create a single plot with subplots for each cluster
+plt.figure(figsize=(15, 8))
 for cluster_id in range(3):
-    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 3, cluster_id+1)
     cluster_data = data_with_clusters[data_with_clusters['Cluster'] == cluster_id]
-    sns.countplot(x='Area', data=cluster_data, order=cluster_data['Area'].value_counts().index, palette='viridis')
-    plt.title(f'Area Distribution for Cluster {cluster_id}')
-    plt.xticks(rotation=45, ha='right')
-    plt.show()
+    
+    # Select only the first 20 countries for each cluster
+    first_30_countries = cluster_data['Area'].unique()[:30]
+    cluster_data = cluster_data[cluster_data['Area'].isin(first_30_countries)]
+    
+    sns.countplot(x='Area', data=cluster_data, order=cluster_data['Area'].value_counts().index, palette='viridis', legend=False)
+    plt.title(f'Area Distribution for Cluster {cluster_id} ')
+    plt.xticks(rotation=90, ha='right')
+
+plt.tight_layout()
+plt.show()
 
 
+
+
+# Load the FAO dataset 
+fao_data = pd.read_csv('FAO.csv', encoding='latin-1')
 
 # Select relevant columns for clustering
 columns_for_clustering = ["latitude", "longitude", "Y1961", "Y1962", "Y1963", "Y1964", "Y1965", "Y1966", "Y1967", "Y1968", "Y1969", "Y1970"]
