@@ -82,6 +82,10 @@ ax1.set_title('Original Data for Different Areas')
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Y1961') 
 
+ax2.set_title(f'Fitted Polynomial (Order {order}) for Different Areas')
+ax2.set_xlabel('Time')
+ax2.set_ylabel('Predicted Values')
+
 
 
 selected_features = ['Area', 'Unit', 'Element', 'Item']
