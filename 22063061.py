@@ -82,10 +82,15 @@ ax1.set_title('Original Data for Different Areas')
 ax1.set_xlabel('Time')
 ax1.set_ylabel('Y1961') 
 
-ax2.set_title(f'Fitted Polynomial (Order {order}) for Different Areas')
+ax2.set_title(f'Fitted Polynomial for Different Areas')
 ax2.set_xlabel('Time')
 ax2.set_ylabel('Predicted Values')
 
+# Adjust the spacing between subplots
+plt.subplots_adjust(wspace=0.3)
+
+# Display the plots
+plt.show()
 
 
 selected_features = ['Area', 'Unit', 'Element', 'Item']
@@ -131,8 +136,6 @@ plt.tight_layout()
 plt.show()
 
 
-
-
 # Load the FAO dataset 
 fao_data = pd.read_csv('FAO.csv', encoding='latin-1')
 
@@ -168,4 +171,44 @@ plt.scatter(fao_data['longitude'], fao_data['latitude'], c=fao_data['Cluster'], 
 plt.title('Hierarchical Clustering of FAO Data')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
+plt.show()
+# Extract the relevant features
+selected_features = ['Unit', 'Item', 'Area', 'Y1961']
+data = fao_data[selected_features]
+
+# Select the first 10 items and areas
+selected_items = data['Item'].unique()[:30]
+selected_areas = data['Area'].unique()[:30]
+
+# Filter the data for selected items and areas
+filtered_data = data[data['Item'].isin(selected_items) & data['Area'].isin(selected_areas)]
+
+# Pivot the filtered data
+pivot_data = filtered_data.pivot_table(index='Area', columns='Item', values='Y1961', aggfunc='sum', fill_value=0)
+
+# Standardize the data
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(pivot_data)
+
+# Apply KMeans clustering
+kmeans = KMeans(n_clusters=3, random_state=42)  # Adjust the number of clusters as needed
+clusters = kmeans.fit_predict(scaled_data)
+
+# Add cluster information to the DataFrame
+pivot_data['Cluster'] = clusters
+
+# Melt the DataFrame to have 'Item' as a column
+melted_data = pd.melt(pivot_data.reset_index(), id_vars=['Area', 'Cluster'], var_name='Item', value_name='Production')
+
+# Create a scatter plot
+plt.figure(figsize=(12, 8))
+sns.scatterplot(x='Area', y='Production', hue='Cluster', style='Item', data=melted_data, palette='viridis', markers=True)
+
+plt.title('Scatter Plot of Production by Item and Area with Clustering')
+plt.xlabel('Area')
+plt.ylabel('Production')
+plt.xticks(rotation=90, ha='right')
+plt.legend(title='Item', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+plt.tight_layout()
 plt.show()
