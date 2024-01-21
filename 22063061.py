@@ -83,7 +83,7 @@ def cluster_data_kmeans(data, num_clusters=3):
     return pd.Series(cluster_labels, index=data.index), kmeans
 
 
-#Clustering code for performing clustering 
+# Clustering code for performing clustering
 fao_data = load_fao_dataset('FAO.csv')
 data_for_clustering = cleantranspose('FAO.csv')
 # Perform clustering using KMeans
@@ -102,7 +102,7 @@ plt.ylabel('Latitude')
 plt.legend()
 plt.show()
 
-#plotting Scatter graph of production
+# plotting Scatter graph of production
 selected_features = ['Unit', 'Item', 'Area', 'Y1961']
 data = fao_data[selected_features]
 
@@ -182,7 +182,7 @@ def mean_absolute_error(y_true, y_pred):
     return np.mean(np.abs(y_true - y_pred))
 
 
-#Fitting the model and performing the curve fit into the data
+# Fitting the model and performing the curve fit into the data
 fao_data = load_fao_dataset('FAO.csv')
 # Get unique areas and sort them
 areas = fao_data['Area'].unique()
@@ -237,7 +237,7 @@ plt.subplots_adjust(wspace=0.3)
 plt.show()
 
 
-#Code for displaying Area distribution clustering
+# Code for displaying Area distribution clustering
 selected_features = ['Area', 'Unit', 'Element', 'Item']
 data = fao_data[selected_features]
 
@@ -282,7 +282,7 @@ plt.tight_layout()
 plt.show()
 
 
-#Code for plotting the Hierarchical cluster of FAO dataset
+# Code for plotting the Hierarchical cluster of FAO dataset
 fao_data = load_fao_dataset('FAO.csv')
 
 # Select relevant columns for clustering
@@ -320,5 +320,3 @@ plt.title('Hierarchical Clustering of FAO Data')
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.show()
-
-
