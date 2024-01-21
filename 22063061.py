@@ -209,6 +209,34 @@ plt.xlabel('Area')
 plt.ylabel('Production')
 plt.xticks(rotation=90, ha='right')
 plt.legend(title='Item', bbox_to_anchor=(1.05, 1), loc='upper left')
-
 plt.tight_layout()
-plt.show()
+
+from sklearn.metrics import silhouette_score
+
+# Load the FAO dataset 
+fao_data = pd.read_csv('FAO.csv', encoding='latin-1')
+
+# Select relevant columns for clustering
+columns_for_clustering = ["latitude", "longitude", "Y1961", "Y1962", "Y1963", "Y1964", "Y1965", "Y1966", "Y1967", "Y1968", "Y1969", "Y1970"]
+
+# Extract the selected columns
+data_for_clustering = fao_data[columns_for_clustering]
+
+# Handle non-numeric values
+data_for_clustering = data_for_clustering.apply(pd.to_numeric, errors='coerce')
+
+# Drop rows with missing values
+data_for_clustering = data_for_clustering.dropna()
+
+# Normalize the data
+scaler = StandardScaler()
+normalized_data = scaler.fit_transform(data_for_clustering)
+
+# Perform clustering using KMeans
+kmeans = KMeans(n_clusters=3)  
+cluster_labels = kmeans.fit_predict(normalized_data)
+
+# Calculate silhouette score
+sil_score = silhouette_score(normalized_data, cluster_labels)
+print(f"Silhouette Score: {sil_score}")
+
